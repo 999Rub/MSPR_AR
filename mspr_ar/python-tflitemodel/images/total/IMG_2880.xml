@@ -1,0 +1,26 @@
+<annotation>
+	<folder>test</folder>
+	<filename>IMG_2880.JPG</filename>
+	<path>D:\MSPR_AR\xml_to_csv\images\test\IMG_2880.JPG</path>
+	<source>
+		<database>Unknown</database>
+	</source>
+	<size>
+		<width>4032</width>
+		<height>3024</height>
+		<depth>3</depth>
+	</size>
+	<segmented>0</segmented>
+	<object>
+		<name>Singe</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>1941</xmin>
+			<ymin>698</ymin>
+			<xmax>2735</xmax>
+			<ymax>1887</ymax>
+		</bndbox>
+	</object>
+</annotation>

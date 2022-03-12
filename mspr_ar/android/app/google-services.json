@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "314866345110",
+    "project_id": "msprdessin",
+    "storage_bucket": "msprdessin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314866345110:android:e4dab3c2541e817bd20eb7",
+        "android_client_info": {
+          "package_name": "com.example.msprmlkit"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "314866345110-a9t541k2jbsqr608rb131ortud69ep0l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAJ23rrFTBk8OlI-17B4zVwHzAQ9KkBVlA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "314866345110-a9t541k2jbsqr608rb131ortud69ep0l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
