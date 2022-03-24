@@ -1,5 +1,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.msprmlkit">
+    <uses-permission android:name="android.permission.CAMERA" />
+
+<!-- Limits app visibility in the Google Play Store to ARCore supported devices
+     (https://developers.google.com/ar/devices). -->
+<uses-feature android:name="android.hardware.camera.ar" />
    <application
         android:label="msprmlkit"
         android:name="${applicationName}"
@@ -32,8 +37,9 @@
             android:value="2" />
         <meta-data
              android:name="com.google.mlkit.vision.DEPENDENCIES"
-             android:value="ica,ocr,face" />
+             android:value="ica" />
         <!-- <uses-permission android:name="android.permission.INTERNET" /> -->
     <!-- To use multiple models: android:value="ica,model2,model3" -->
+    
     </application>
 </manifest>
