@@ -57,30 +57,34 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Center(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(50),
-              child: CupertinoButton(
-                  child: Text("Camera"),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) =>
-                                CameraInput(cameras: camera))));
-                  }),
-            ),
-            CupertinoButton(
-                child: Text("Ar View"),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: ((context) => HelloWorld())));
-                })
-          ],
-        ),
-      ),
-    );
+        body: CameraInput(
+      cameras: camera,
+    )
+
+        // Center(
+        //   child: Column(
+        //     children: [
+        //       Padding(
+        //         padding: const EdgeInsets.all(50),
+        //         child: CupertinoButton(
+        //             child: Text("Camera"),
+        //             onPressed: () {
+        //               Navigator.push(
+        //                   context,
+        //                   MaterialPageRoute(
+        //                       builder: ((context) =>
+        //                           CameraInput(cameras: camera))));
+        //             }),
+        //       ),
+        //       CupertinoButton(
+        //           child: Text("Ar View"),
+        //           onPressed: () {
+        //             Navigator.push(context,
+        //                 MaterialPageRoute(builder: ((context) => HelloWorld())));
+        //           })
+        //     ],
+        //   ),
+        // ),
+        );
   }
 }

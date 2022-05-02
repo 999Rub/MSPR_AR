@@ -14,9 +14,6 @@ class _HelloWorldState extends State<HelloWorld> {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Hello World'),
-        ),
         body: ArCoreView(
           onArCoreViewCreated: _onArCoreViewCreated,
         ),
