@@ -121,6 +121,7 @@ class _CameraInputState extends State<CameraInput> {
                         final image = await controller!.takePicture();
                         print(image.path + ' PHOTO PRISE');
                         final inputImage = InputImage.fromFilePath(image.path);
+
                         final modelPath =
                             await _getModel('assets/ml/object_labeler.tflite');
                         final options = LocalObjectDetectorOptions(
