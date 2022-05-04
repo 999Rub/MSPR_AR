@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:msprmlkit/ar_view.dart';
 import 'package:msprmlkit/camera_input.dart';
+import 'package:msprmlkit/live_view.dart';
 
 List<CameraDescription>? camera;
 Future<void> main() async {
@@ -57,34 +58,37 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: CameraInput(
-      cameras: camera,
-    )
+      body: ObjectDetectorView(
+        cameras: camera!,
+      ),
+      //     body: CameraInput(
+      //   cameras: camera,
+      // )
 
-        // Center(
-        //   child: Column(
-        //     children: [
-        //       Padding(
-        //         padding: const EdgeInsets.all(50),
-        //         child: CupertinoButton(
-        //             child: Text("Camera"),
-        //             onPressed: () {
-        //               Navigator.push(
-        //                   context,
-        //                   MaterialPageRoute(
-        //                       builder: ((context) =>
-        //                           CameraInput(cameras: camera))));
-        //             }),
-        //       ),
-        //       CupertinoButton(
-        //           child: Text("Ar View"),
-        //           onPressed: () {
-        //             Navigator.push(context,
-        //                 MaterialPageRoute(builder: ((context) => HelloWorld())));
-        //           })
-        //     ],
-        //   ),
-        // ),
-        );
+      // Center(
+      //   child: Column(
+      //     children: [
+      //       Padding(
+      //         padding: const EdgeInsets.all(50),
+      //         child: CupertinoButton(
+      //             child: Text("Camera"),
+      //             onPressed: () {
+      //               Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute(
+      //                       builder: ((context) =>
+      //                           CameraInput(cameras: camera))));
+      //             }),
+      //       ),
+      //       CupertinoButton(
+      //           child: Text("Ar View"),
+      //           onPressed: () {
+      //             Navigator.push(context,
+      //                 MaterialPageRoute(builder: ((context) => HelloWorld())));
+      //           })
+      //     ],
+      //   ),
+      // ),
+    );
   }
 }

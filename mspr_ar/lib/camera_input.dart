@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +10,8 @@ import 'package:msprmlkit/main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'dart:io' as io;
 import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -23,8 +27,10 @@ class CameraInput extends StatefulWidget {
 
 class _CameraInputState extends State<CameraInput> {
   CameraController? controller;
+  CameraImage? cameraImage;
   bool detected = false;
   Rect? rect;
+  Uint8List? bytes;
 
   @override
   void initState() {
@@ -60,42 +66,21 @@ class _CameraInputState extends State<CameraInput> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-// final WriteBuffer allBytes = WriteBuffer();
-// for (Plane plane in cameraImage.planes) {
-//   allBytes.putUint8List(plane.bytes);
-// }
-// final bytes = allBytes.done().buffer.asUint8List();
-
-// final Size imageSize = Size(cameraImage.width.toDouble(), cameraImage.height.toDouble());
-
-// final InputImageRotation imageRotation =
-//     InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-//         InputImageRotation.Rotation_0deg;
-
-// final InputImageFormat inputImageFormat =
-//     InputImageFormatMethods.fromRawValue(cameraImage.format.raw) ??
-//         InputImageFormat.NV21;
-
-// final planeData = cameraImage.planes.map(
-//   (Plane plane) {
-//     return InputImagePlaneMetadata(
-//       bytesPerRow: plane.bytesPerRow,
-//       height: plane.height,
-//       width: plane.width,
-//     );
-//   },
-// ).toList();
-
-// final inputImageData = InputImageData(
-//   size: imageSize,
-//   imageRotation: imageRotation,
-//   inputImageFormat: inputImageFormat,
-//   planeData: planeData,
-// );
-
-// final inputImage = InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
-
     if (!controller!.value.isInitialized) {
       return Container();
     }
@@ -118,29 +103,64 @@ class _CameraInputState extends State<CameraInput> {
 
                         // Attempt to take a picture and then get the location
                         // where the image file is saved.
-                        final image = await controller!.takePicture();
-                        print(image.path + ' PHOTO PRISE');
-                        final inputImage = InputImage.fromFilePath(image.path);
+                        // final image = await controller!.takePicture();
+
+                        controller!.startImageStream(((image) => cameraImage));
+                        // print(image.path + ' PHOTO PRISE');
+                        // final inputImage = InputImage.fromFilePath(image.path);
+                        //  print(inputImage.inputImageData);
+                        final WriteBuffer allBytes = WriteBuffer();
+                        for (final Plane plane in cameraImage!.planes) {
+                          allBytes.putUint8List(plane.bytes);
+                        }
+                        bytes = allBytes.done().buffer.asUint8List();
+
+                        final planeData = cameraImage!.planes.map(
+                          (Plane plane) {
+                            return InputImagePlaneMetadata(
+                              bytesPerRow: plane.bytesPerRow,
+                              height: plane.height,
+                              width: plane.width,
+                            );
+                          },
+                        ).toList();
+                        final Size imageSize = Size(
+                            cameraImage!.width.toDouble(),
+                            cameraImage!.height.toDouble());
+
+                        final InputImageRotation imageRotation =
+                            InputImageRotation.rotation0deg;
+
+                        final InputImageFormat inputImageFormat =
+                            InputImageFormatValue.fromRawValue(
+                                    cameraImage!.format.raw) ??
+                                InputImageFormat.nv21;
+                        final inputImageData = InputImageData(
+                          size: imageSize,
+                          imageRotation: imageRotation,
+                          inputImageFormat: inputImageFormat,
+                          planeData: planeData,
+                        );
+
+                        //  print(await _readFileByte(image.path));
+                        final inputImageBytes = InputImage.fromBytes(
+                            bytes: bytes!, inputImageData: inputImageData);
 
                         final modelPath =
-                            await _getModel('assets/ml/object_labeler.tflite');
+                            await _getModel('assets/ml/detect.tflite');
                         final options = LocalObjectDetectorOptions(
-                            mode: DetectionMode.singleImage,
+                            mode: DetectionMode.stream,
                             modelPath: modelPath,
                             classifyObjects: true,
                             confidenceThreshold: 0.1,
                             multipleObjects: true);
-                        // final LocalModel customModel = LocalModel("model.tflite");
-                        // final objectDetector = ObjectDetector(
-                        //     options: ObjectDetectorOptions(
-                        //         mode: DetectionMode.singleImage,
-                        //         classifyObjects: true,
-                        //         multipleObjects: false));
 
                         final objectDetector = ObjectDetector(options: options);
 
                         final List<DetectedObject> objects =
-                            await objectDetector.processImage(inputImage);
+                            await objectDetector.processImage(inputImageBytes);
+
+                        // controller!.stopImageStream();
 
                         if (objects.isEmpty) {
                           print("AUCUN OBJET RETECTE ");
@@ -156,6 +176,7 @@ class _CameraInputState extends State<CameraInput> {
                             rect = objects.single.boundingBox;
                           });
                         }
+                        objectDetector.close();
 
                         // print("PROCESS IMAGE TERMINE ${objects.length}");
                         // for (DetectedObject detectedObject in objects) {
@@ -172,7 +193,6 @@ class _CameraInputState extends State<CameraInput> {
                         //   print(trackingId);
                         // }
 
-                        objectDetector.close();
                       } catch (e) {
                         // If an error occurs, log the error to the console.
                         print(e);
