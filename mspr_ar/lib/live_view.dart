@@ -60,7 +60,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
 
     // uncomment next lines if you want to use a local model
     // make sure to add tflite model to assets/ml
-    final path = 'assets/ml/model.tflite';
+    final path = 'assets/ml/efficient.tflite';
     final modelPath = await _getModel(path);
     final options = LocalObjectDetectorOptions(
       modelPath: modelPath,
@@ -95,7 +95,7 @@ class _ObjectDetectorView extends State<ObjectDetectorView> {
     final objects = await _objectDetector.processImage(inputImage);
     if (objects.isNotEmpty) {
       print(
-          "PROCCES IMAGE TERMINEE :${objects.first.boundingBox} & ${objects.first.labels.first.text}");
+          "PROCCES IMAGE TERMINEE :${objects.first.boundingBox} & ${objects.first.labels.first.text != null ? objects.first.labels.first.text : 'PAS DE NOM'}");
     }
     if (inputImage.inputImageData?.size != null &&
         inputImage.inputImageData?.imageRotation != null) {
