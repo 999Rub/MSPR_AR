@@ -105,44 +105,74 @@ class _CameraInputState extends State<CameraInput> {
                   final imageLabeler = GoogleMlKit.vision.imageLabeler(
                       CustomImageLabelerOptions(
                           customModel: localModel,
-                          customModelPath: "model.tflite"));
-                  Map<Image, InputImage> imageprocessor = await ImageDetector(
-                          path: image.path,
-                          inputImage: inputImage,
-                          image: image)
-                      .image_pyramids();
+                          customModelPath: "model-moldav.tflite"));
 
-                  print(imageprocessor.entries.single.value);
-                  final List<ImageLabel> labels = await imageLabeler
-                      .processImage(imageprocessor.entries.single.value);
+                  List<ImageLabel> labels =
+                      await imageLabeler.processImage(inputImage);
 
-                  //  LocalModel localModel = LocalModel(modelPath)
                   for (ImageLabel label in labels) {
-                    final String text = label.label;
-                    final int index = label.index;
-                    final double confidence = label.confidence;
-                    print(label.label);
-                    print(label.confidence);
-                    if (text == "singe") {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => HelloWorld())));
-                      break;
+                    String text = label.label;
+                    int index = label.index;
+                    double confidence = label.confidence;
+                    print(text);
+                    print(confidence);
+
+                    if (text != "vide") {
+                      Map<List<Image>, List<InputImage>> imageprocessor =
+                          await ImageDetector(
+                                  path: image.path,
+                                  inputImage: inputImage,
+                                  image: image)
+                              .image_pyramids();
+
+                      print(imageprocessor.entries.single.value);
+                      for (InputImage input
+                          in imageprocessor.entries.single.value) {
+                        // print(
+                        //     "${imageprocessor.entries.single.value[index]}  $index");
+                        List<ImageLabel> labels =
+                            await imageLabeler.processImage(input);
+                        // Navigator.push(
+                        //     context,
+                        //     MaterialPageRoute(
+                        //         builder: ((context) => ImageResizedView(
+                        //             image: imageprocessor
+                        //                 .entries.single.key[index]))));
+                        for (ImageLabel label in labels) {
+                          String text = label.label;
+                          int index = label.index;
+                          double confidence = label.confidence;
+                          print(text);
+                          print(confidence);
+
+                          if (text == "singe") {}
+                          print("---------- INPUT SUIVANT ---------");
+                        }
+                      }
+                    } else {
+                      imageLabeler.close();
                     }
-                    imageLabeler.close();
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: ((context) => ImageResizedView(
-                                image: imageprocessor.entries.single.key))));
                   }
                 } catch (e) {
                   // If an error occurs, log the error to the console.
                   print(e);
                 }
               },
-              child: const Icon(Icons.camera_alt),
+              child: Column(
+                children: [
+                  Container(
+                    height: MediaQuery.of(context).size.height / 3,
+                    width: MediaQuery.of(context).size.width / 2,
+                    margin: EdgeInsets.only(
+                      top: MediaQuery.of(context).size.height / 3,
+                    ),
+                    //left: MediaQuery.of(context).size.width / 3),
+                    decoration:
+                        BoxDecoration(color: Colors.black.withOpacity(0.2)),
+                  ),
+                  Icon(Icons.camera_alt)
+                ],
+              ),
             ),
           ),
         );
