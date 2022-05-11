@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:msprmlkit/ar_view.dart';
+import 'package:msprmlkit/image_detector.dart';
+import 'package:msprmlkit/image_resize_view.dart';
 import 'package:msprmlkit/main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 
@@ -104,9 +106,16 @@ class _CameraInputState extends State<CameraInput> {
                       CustomImageLabelerOptions(
                           customModel: localModel,
                           customModelPath: "model.tflite"));
+                  Map<Image, InputImage> imageprocessor = await ImageDetector(
+                          path: image.path,
+                          inputImage: inputImage,
+                          image: image)
+                      .image_pyramids();
 
-                  final List<ImageLabel> labels =
-                      await imageLabeler.processImage(inputImage);
+                  print(imageprocessor.entries.single.value);
+                  final List<ImageLabel> labels = await imageLabeler
+                      .processImage(imageprocessor.entries.single.value);
+
                   //  LocalModel localModel = LocalModel(modelPath)
                   for (ImageLabel label in labels) {
                     final String text = label.label;
@@ -122,6 +131,11 @@ class _CameraInputState extends State<CameraInput> {
                       break;
                     }
                     imageLabeler.close();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => ImageResizedView(
+                                image: imageprocessor.entries.single.key))));
                   }
                 } catch (e) {
                   // If an error occurs, log the error to the console.
