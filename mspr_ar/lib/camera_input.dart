@@ -106,9 +106,13 @@ class _CameraInputState extends State<CameraInput> {
                       CustomImageLabelerOptions(
                           customModel: localModel,
                           customModelPath: "model-moldav.tflite"));
-
+                  List imageprocessor = await ImageDetector(
+                          path: image.path,
+                          inputImage: inputImage,
+                          image: image)
+                      .image_pyramids();
                   List<ImageLabel> labels =
-                      await imageLabeler.processImage(inputImage);
+                      await imageLabeler.processImage(imageprocessor[1]);
 
                   for (ImageLabel label in labels) {
                     String text = label.label;
@@ -118,41 +122,15 @@ class _CameraInputState extends State<CameraInput> {
                     print(confidence);
 
                     if (text != "vide") {
-                      Map<List<Image>, List<InputImage>> imageprocessor =
-                          await ImageDetector(
-                                  path: image.path,
-                                  inputImage: inputImage,
-                                  image: image)
-                              .image_pyramids();
-
-                      print(imageprocessor.entries.single.value);
-                      for (InputImage input
-                          in imageprocessor.entries.single.value) {
-                        // print(
-                        //     "${imageprocessor.entries.single.value[index]}  $index");
-                        List<ImageLabel> labels =
-                            await imageLabeler.processImage(input);
-                        // Navigator.push(
-                        //     context,
-                        //     MaterialPageRoute(
-                        //         builder: ((context) => ImageResizedView(
-                        //             image: imageprocessor
-                        //                 .entries.single.key[index]))));
-                        for (ImageLabel label in labels) {
-                          String text = label.label;
-                          int index = label.index;
-                          double confidence = label.confidence;
-                          print(text);
-                          print(confidence);
-
-                          if (text == "singe") {}
-                          print("---------- INPUT SUIVANT ---------");
-                        }
-                      }
-                    } else {
-                      imageLabeler.close();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: ((context) =>
+                                  ImageResizedView(image: imageprocessor[0]))));
+                      break;
                     }
                   }
+                  imageLabeler.close();
                 } catch (e) {
                   // If an error occurs, log the error to the console.
                   print(e);
@@ -167,10 +145,14 @@ class _CameraInputState extends State<CameraInput> {
                       top: MediaQuery.of(context).size.height / 3,
                     ),
                     //left: MediaQuery.of(context).size.width / 3),
-                    decoration:
-                        BoxDecoration(color: Colors.black.withOpacity(0.2)),
+                    decoration: BoxDecoration(
+                        color: Colors.grey.shade900.withOpacity(0.1),
+                        border: Border.all(
+                            width: 2.0,
+                            color: Colors.grey.shade900.withOpacity(0.25)),
+                        borderRadius: BorderRadius.circular(15)),
                   ),
-                  Icon(Icons.camera_alt)
+                  //   Icon(Icons.camera_alt)
                 ],
               ),
             ),
