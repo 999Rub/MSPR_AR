@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -5,9 +7,14 @@ import 'package:camera/camera.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:msprmlkit/ar_view.dart';
 import 'package:msprmlkit/image_detector.dart';
-import 'package:msprmlkit/image_resize_view.dart';
 import 'package:msprmlkit/main.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'dart:io' as io;
+import 'package:flutter/services.dart';
+import 'package:image/image.dart' as img;
+
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 
 class CameraInput extends StatefulWidget {
   // List<CameraDescription> cameras;
@@ -21,6 +28,10 @@ class CameraInput extends StatefulWidget {
 
 class _CameraInputState extends State<CameraInput> {
   CameraController? controller;
+  CameraImage? cameraImage;
+  bool detected = false;
+  Rect? rect;
+  Uint8List? bytes;
 
   @override
   void initState() {
@@ -41,42 +52,21 @@ class _CameraInputState extends State<CameraInput> {
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final CameraController? cameraController = controller;
+
+    // App state changed before we got the chance to initialize.
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      return;
+    }
+
+    if (state == AppLifecycleState.inactive) {
+      cameraController.dispose();
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-// final WriteBuffer allBytes = WriteBuffer();
-// for (Plane plane in cameraImage.planes) {
-//   allBytes.putUint8List(plane.bytes);
-// }
-// final bytes = allBytes.done().buffer.asUint8List();
-
-// final Size imageSize = Size(cameraImage.width.toDouble(), cameraImage.height.toDouble());
-
-// final InputImageRotation imageRotation =
-//     InputImageRotationMethods.fromRawValue(camera.sensorOrientation) ??
-//         InputImageRotation.Rotation_0deg;
-
-// final InputImageFormat inputImageFormat =
-//     InputImageFormatMethods.fromRawValue(cameraImage.format.raw) ??
-//         InputImageFormat.NV21;
-
-// final planeData = cameraImage.planes.map(
-//   (Plane plane) {
-//     return InputImagePlaneMetadata(
-//       bytesPerRow: plane.bytesPerRow,
-//       height: plane.height,
-//       width: plane.width,
-//     );
-//   },
-// ).toList();
-
-// final inputImageData = InputImageData(
-//   size: imageSize,
-//   imageRotation: imageRotation,
-//   inputImageFormat: inputImageFormat,
-//   planeData: planeData,
-// );
-
-// final inputImage = InputImage.fromBytes(bytes: bytes, inputImageData: inputImageData);
-
     if (!controller!.value.isInitialized) {
       return Container();
     }
@@ -84,81 +74,108 @@ class _CameraInputState extends State<CameraInput> {
       home: ResponsiveSizer(builder: (context, orientation, screentype) {
         return CameraPreview(
           controller!,
-          child: Container(
-            height: 30,
-            width: 30,
-            child: CupertinoButton(
-              // Provide an onPressed callback.
-              onPressed: () async {
-                // Take the Picture in a try / catch block. If anything goes wrong,
-                // catch the error.
-                try {
-                  // Ensure that the camera is initialized.
-                  await widget.cameras;
+          child: !detected
+              ? Container(
+                  height: 30,
+                  width: 30,
+                  child: CupertinoButton(
+                    // Provide an onPressed callback.
+                    onPressed: () async {
+                      // Take the Picture in a try / catch block. If anything goes wrong,
+                      // catch the error.
+                      try {
+                        // Ensure that the camera is initialized.
+                        await widget.cameras;
 
-                  // Attempt to take a picture and then get the location
-                  // where the image file is saved.
-                  final image = await controller!.takePicture();
-                  print(image.path);
-                  final inputImage = InputImage.fromFilePath(image.path);
-                  const CustomLocalModel localModel = CustomLocalModel.asset;
-                  final imageLabeler = GoogleMlKit.vision.imageLabeler(
-                      CustomImageLabelerOptions(
-                          customModel: localModel,
-                          customModelPath: "model-moldav.tflite"));
-                  List imageprocessor = await ImageDetector(
-                          path: image.path,
-                          inputImage: inputImage,
-                          image: image)
-                      .image_pyramids();
-                  List<ImageLabel> labels =
-                      await imageLabeler.processImage(imageprocessor[1]);
+                        // Attempt to take a picture and then get the location
+                        // where the image file is saved.
+                        // final image = await controller!.takePicture();
 
-                  for (ImageLabel label in labels) {
-                    String text = label.label;
-                    int index = label.index;
-                    double confidence = label.confidence;
-                    print(text);
-                    print(confidence);
+                        controller!.startImageStream(((image) => cameraImage));
+                        // print(image.path + ' PHOTO PRISE');
+                        // final inputImage = InputImage.fromFilePath(image.path);
+                        //  print(inputImage.inputImageData);
+                        final WriteBuffer allBytes = WriteBuffer();
+                        for (final Plane plane in cameraImage!.planes) {
+                          allBytes.putUint8List(plane.bytes);
+                        }
+                        bytes = allBytes.done().buffer.asUint8List();
 
-                    if (text != "vide") {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) =>
-                                  ImageResizedView(image: imageprocessor[0]))));
-                      break;
-                    }
-                  }
-                  imageLabeler.close();
-                } catch (e) {
-                  // If an error occurs, log the error to the console.
-                  print(e);
-                }
-              },
-              child: Column(
-                children: [
-                  Container(
-                    height: MediaQuery.of(context).size.height / 3,
-                    width: MediaQuery.of(context).size.width / 2,
-                    margin: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height / 3,
-                    ),
-                    //left: MediaQuery.of(context).size.width / 3),
-                    decoration: BoxDecoration(
-                        color: Colors.grey.shade900.withOpacity(0.1),
-                        border: Border.all(
-                            width: 2.0,
-                            color: Colors.grey.shade900.withOpacity(0.25)),
-                        borderRadius: BorderRadius.circular(15)),
+                        final planeData = cameraImage!.planes.map(
+                          (Plane plane) {
+                            return InputImagePlaneMetadata(
+                              bytesPerRow: plane.bytesPerRow,
+                              height: plane.height,
+                              width: plane.width,
+                            );
+                          },
+                        ).toList();
+                        final Size imageSize = Size(
+                            cameraImage!.width.toDouble(),
+                            cameraImage!.height.toDouble());
+
+                        const InputImageRotation imageRotation =
+                            InputImageRotation.Rotation_0deg;
+
+                        const InputImageFormat inputImageFormat =
+                            InputImageFormat.NV21;
+                        final inputImageData = InputImageData(
+                          size: imageSize,
+                          imageRotation: imageRotation,
+                          inputImageFormat: inputImageFormat,
+                          planeData: planeData,
+                        );
+
+                        //  print(await _readFileByte(image.path));
+                        final inputImageBytes = InputImage.fromBytes(
+                            bytes: bytes!, inputImageData: inputImageData);
+
+                        const CustomLocalModel localModel =
+                            CustomLocalModel.asset;
+                        final imageLabeler = GoogleMlKit.vision.imageLabeler(
+                            CustomImageLabelerOptions(
+                                customModel: localModel,
+                                customModelPath: "model-moldav.tflite"));
+
+                        List imageprocessor = await ImageDetector(
+                                path: inputImageBytes.filePath!,
+                                inputImage: inputImageBytes,
+                                image: XFile.fromData(inputImageBytes.bytes!))
+                            .image_pyramids();
+                        List<ImageLabel> labels =
+                            await imageLabeler.processImage(imageprocessor[1]);
+                      } catch (e) {
+                        // If an error occurs, log the error to the console.
+                        print(e);
+                      }
+                    },
+                    child: const Icon(Icons.camera_alt),
                   ),
-                  //   Icon(Icons.camera_alt)
-                ],
-              ),
-            ),
-          ),
+                )
+              : CustomPaint(
+                  painter: Box(rect: rect!),
+                ),
         );
       }),
     );
+  }
+}
+
+class Box extends CustomPainter {
+  Rect rect;
+  Box({required this.rect});
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(
+      rect,
+      new Paint()
+        ..style = PaintingStyle.stroke
+        ..color = new Color(0xFF0099FF),
+    );
+  }
+
+  @override
+  bool shouldRepaint(Box oldDelegate) {
+    return false;
   }
 }
