@@ -33,8 +33,42 @@ class ImageDetector {
 
     File file = await File(path).writeAsBytes(newbytes);
     InputImage cropedInput = InputImage.fromFile(file);
-    List cropedDatas = [cropedimge, cropedInput];
+    List<Color> extractedColors = extractPixelsColors(newbytes);
+    List cropedDatas = [cropedimge, cropedInput, extractedColors];
     // print(img);
     return cropedDatas;
+  }
+
+  List<Color> extractPixelsColors(Uint8List? bytes) {
+    List<Color> colors = [];
+    int noOfPixelsPerAxis = 12;
+
+    List<int> values = bytes!.buffer.asUint8List();
+    imglib.Image? image = imglib.decodeImage(values);
+
+    List<int?> pixels = [];
+
+    int? width = image?.width;
+    int? height = image?.height;
+
+    int xChunk = width! ~/ (noOfPixelsPerAxis + 1);
+    int yChunk = height! ~/ (noOfPixelsPerAxis + 1);
+
+    for (int j = 1; j < noOfPixelsPerAxis + 1; j++) {
+      for (int i = 1; i < noOfPixelsPerAxis + 1; i++) {
+        int? pixel = image?.getPixel(xChunk * i, yChunk * j);
+        pixels.add(pixel);
+        colors.add(abgrToColor(pixel!));
+      }
+    }
+
+    return colors;
+  }
+
+  Color abgrToColor(int argbColor) {
+    int r = (argbColor >> 16) & 0xFF;
+    int b = argbColor & 0xFF;
+    int hex = (argbColor & 0xFF00FF00) | (b << 16) | r;
+    return Color(hex);
   }
 }
