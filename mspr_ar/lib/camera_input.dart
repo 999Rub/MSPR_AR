@@ -122,13 +122,17 @@ class _CameraInputState extends State<CameraInput> {
                     print(confidence);
 
                     if (text == "singe") {
+                      // Navigator.push(
+                      //     context,
+                      //     MaterialPageRoute(
+                      //         builder: ((context) => ImageResizedView(
+                      //               image: imageprocessor[0],
+                      //               colors: imageprocessor[2],
+                      //             ))));
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: ((context) => ImageResizedView(
-                                    image: imageprocessor[0],
-                                    colors: imageprocessor[2],
-                                  ))));
+                              builder: ((context) => HelloWorld())));
                       break;
                     }
                   }

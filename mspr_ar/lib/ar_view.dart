@@ -1,6 +1,16 @@
+import 'dart:io';
+
+import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
+import 'package:ar_flutter_plugin/datatypes/node_types.dart';
+import 'package:ar_flutter_plugin/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin/models/ar_node.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
+import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 
 class HelloWorld extends StatefulWidget {
   @override
@@ -8,76 +18,83 @@ class HelloWorld extends StatefulWidget {
 }
 
 class _HelloWorldState extends State<HelloWorld> {
-  ArCoreController? arCoreController;
+  ARSessionManager? arSessionManager;
+  ARObjectManager? arObjectManager;
+  //String localObjectReference;
+  ARNode? localObjectNode;
+  //String webObjectReference;
+  ARNode? fileSystemNode;
+  HttpClient? httpClient;
+  ARNode? webObjectNode;
+
+  @override
+  void dispose() {
+    super.dispose();
+    arSessionManager?.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        body: ArCoreView(
-          onArCoreViewCreated: _onArCoreViewCreated,
-        ),
+        home: Scaffold(
+            body: Container(
+                child: Stack(children: [
+      ARView(
+        onARViewCreated: onARViewCreated,
+        planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
       ),
-    );
+    ]))));
   }
 
-  void _onArCoreViewCreated(ArCoreController controller) {
-    arCoreController = controller;
+  void onARViewCreated(
+      ARSessionManager arSessionManager,
+      ARObjectManager arObjectManager,
+      ARAnchorManager arAnchorManager,
+      ARLocationManager arLocationManager) {
+    this.arSessionManager = arSessionManager;
+    this.arObjectManager = arObjectManager;
 
-    _addSphere(arCoreController!);
-    _addCylindre(arCoreController!);
-    _addCube(arCoreController!);
-  }
+    this.arSessionManager?.onInitialize(
+          showFeaturePoints: false,
+          showPlanes: false,
+          //  customPlaneTexturePath: "Images/triangle.png",
+          showWorldOrigin: false,
+          handleTaps: false,
+        );
+    this.arObjectManager?.onInitialize();
 
-  void _addSphere(ArCoreController controller) {
-    final material = ArCoreMaterial(color: Color.fromARGB(120, 66, 134, 244));
-    final sphere = ArCoreSphere(
-      materials: [material],
-      radius: 0.1,
-    );
-    final node = ArCoreNode(
-      shape: sphere,
-      position: vector.Vector3(0, 0, -1.5),
-    );
-    controller.addArCoreNode(node);
-  }
+    Future<void> onLocalObjectAtOriginButtonPressed() async {
+      if (localObjectNode != null) {
+        this.arObjectManager?.removeNode(localObjectNode!);
+        localObjectNode = null;
+      } else {
+        var newNode = ARNode(
+            type: NodeType.localGLTF2,
+            uri: "Models/rainbow.glb",
+            scale: vector.Vector3(0.2, 0.2, 0.2),
+            position: vector.Vector3(0.0, 0.0, 0.0),
+            rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+        bool? didAddLocalNode = await this.arObjectManager?.addNode(newNode);
+        localObjectNode = (didAddLocalNode!) ? newNode : null;
+      }
+    }
 
-  void _addCylindre(ArCoreController controller) {
-    final material = ArCoreMaterial(
-      color: Colors.red,
-      reflectance: 1.0,
-    );
-    final cylindre = ArCoreCylinder(
-      materials: [material],
-      radius: 0.5,
-      height: 0.3,
-    );
-    final node = ArCoreNode(
-      shape: cylindre,
-      position: vector.Vector3(0.0, -0.5, -2.0),
-    );
-    controller.addArCoreNode(node);
-  }
+    Future<void> onWebObjectAtOriginButtonPressed() async {
+      if (webObjectNode != null) {
+        this.arObjectManager?.removeNode(webObjectNode!);
+        webObjectNode = null;
+      } else {
+        var newNode = ARNode(
+            type: NodeType.webGLB,
+            uri:
+                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+            scale: vector.Vector3(0.2, 0.2, 0.2));
+        bool? didAddWebNode = await this.arObjectManager?.addNode(newNode);
+        webObjectNode = (didAddWebNode!) ? newNode : null;
+      }
+    }
 
-  void _addCube(ArCoreController controller) {
-    final material = ArCoreMaterial(
-      color: Color.fromARGB(120, 66, 134, 244),
-      metallic: 1.0,
-    );
-    final cube = ArCoreCube(
-      materials: [material],
-      size: vector.Vector3(0.5, 0.5, 0.5),
-    );
-    final node = ArCoreNode(
-      shape: cube,
-      position: vector.Vector3(-0.5, 0.5, -3.5),
-    );
-    controller.addArCoreNode(node);
-  }
-
-  @override
-  void dispose() {
-    arCoreController!.dispose();
-    super.dispose();
+    // onLocalObjectAtOriginButtonPressed();
+    onWebObjectAtOriginButtonPressed();
   }
 }
