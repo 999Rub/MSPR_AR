@@ -8,6 +8,7 @@ import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin/models/ar_node.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
+import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
@@ -20,12 +21,15 @@ class HelloWorld extends StatefulWidget {
 class _HelloWorldState extends State<HelloWorld> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
+  ArCoreController? arCoreController;
   //String localObjectReference;
   ARNode? localObjectNode;
   //String webObjectReference;
   ARNode? fileSystemNode;
   HttpClient? httpClient;
   ARNode? webObjectNode;
+  late ARKitController arkitController;
+  ARKitReferenceNode? node;
 
   @override
   void dispose() {
@@ -39,12 +43,44 @@ class _HelloWorldState extends State<HelloWorld> {
         home: Scaffold(
             body: Container(
                 child: Stack(children: [
-      ARView(
-        onARViewCreated: onARViewCreated,
-        planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
+      ArCoreView(
+        onArCoreViewCreated: _onArCoreViewCreated,
       ),
+      // ARKitSceneView(
+      //   onARKitViewCreated: onARKitViewCreated,
+      // ),
+      //  ARView(onARViewCreated: onARViewCreated)
     ]))));
   }
+
+  void _onArCoreViewCreated(ArCoreController controller) {
+    arCoreController = controller;
+    var coreref = ArCoreReferenceNode(
+      //object3DFileName: "cube.obj",
+      objectUrl:
+          "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf",
+    );
+    coreref.shape?.materials.value = [ArCoreMaterial(color: Colors.red)];
+    //coreref.shape!.materials = ArCoreMaterial();
+    controller.addArCoreNode(coreref);
+  }
+
+  // void onARKitViewCreated(ARKitController arkitController) {
+  //   this.arkitController = arkitController;
+  //   arkitController.addCoachingOverlay(CoachingOverlayGoal.horizontalPlane);
+  //   _addPlane(this.arkitController);
+  // }
+
+  // void _addPlane(ARKitController controller) {
+  //   if (node != null) {
+  //     controller.remove(node!.name);
+  //   }
+  //   node = ARKitReferenceNode(
+  //     url: 'cube.obj',
+  //     scale: vector.Vector3.all(0.3),
+  //   );
+  //   controller.add(node!);
+  // }
 
   void onARViewCreated(
       ARSessionManager arSessionManager,
@@ -70,7 +106,7 @@ class _HelloWorldState extends State<HelloWorld> {
       } else {
         var newNode = ARNode(
             type: NodeType.localGLTF2,
-            uri: "Models/rainbow.glb",
+            uri: "assets/singe.gltf",
             scale: vector.Vector3(0.2, 0.2, 0.2),
             position: vector.Vector3(0.0, 0.0, 0.0),
             rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
@@ -94,7 +130,7 @@ class _HelloWorldState extends State<HelloWorld> {
       }
     }
 
-    // onLocalObjectAtOriginButtonPressed();
-    onWebObjectAtOriginButtonPressed();
+    onLocalObjectAtOriginButtonPressed();
+    //onWebObjectAtOriginButtonPressed();
   }
 }
