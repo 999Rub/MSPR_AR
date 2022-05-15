@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
 import 'package:ar_flutter_plugin/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin/managers/ar_anchor_manager.dart';
@@ -11,7 +12,7 @@ import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:arkit_plugin/arkit_plugin.dart';
 import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
-import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
+//import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 
 class HelloWorld extends StatefulWidget {
   @override
@@ -21,10 +22,10 @@ class HelloWorld extends StatefulWidget {
 class _HelloWorldState extends State<HelloWorld> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
-  ArCoreController? arCoreController;
-  //String localObjectReference;
+  // ArCoreController? arCoreController;
+  String? localObjectReference;
   ARNode? localObjectNode;
-  //String webObjectReference;
+  String? webObjectReference;
   ARNode? fileSystemNode;
   HttpClient? httpClient;
   ARNode? webObjectNode;
@@ -34,7 +35,7 @@ class _HelloWorldState extends State<HelloWorld> {
   @override
   void dispose() {
     super.dispose();
-    arSessionManager?.dispose();
+    // arSessionManager?.dispose();
   }
 
   @override
@@ -43,27 +44,28 @@ class _HelloWorldState extends State<HelloWorld> {
         home: Scaffold(
             body: Container(
                 child: Stack(children: [
-      ArCoreView(
-        onArCoreViewCreated: _onArCoreViewCreated,
-      ),
+      // ArCoreView(
+      //   onArCoreViewCreated: _onArCoreViewCreated,
+      // ),
       // ARKitSceneView(
       //   onARKitViewCreated: onARKitViewCreated,
       // ),
-      //  ARView(onARViewCreated: onARViewCreated)
+      ARView(onARViewCreated: onARViewCreated)
     ]))));
   }
 
-  void _onArCoreViewCreated(ArCoreController controller) {
-    arCoreController = controller;
-    var coreref = ArCoreReferenceNode(
-      //object3DFileName: "cube.obj",
-      objectUrl:
-          "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf",
-    );
-    coreref.shape?.materials.value = [ArCoreMaterial(color: Colors.red)];
-    //coreref.shape!.materials = ArCoreMaterial();
-    controller.addArCoreNode(coreref);
-  }
+  // void _onArCoreViewCreated(ArCoreController controller) {
+  //   arCoreController = controller;
+  //   var coreref = ArCoreReferenceNode(
+  //     name: 'cube',
+  //     object3DFileName: "cube.sfb",
+  //     // objectUrl:
+  //     //     "https://https://github.com/999Rub/MSPR_AR/blob/main/mspr_ar/assets/singe.gltf",
+  //   );
+  //   coreref.shape?.materials.value = [ArCoreMaterial(color: Colors.red)];
+  //   //coreref.shape!.materials = ArCoreMaterial();
+  //   controller.addArCoreNodeWithAnchor(coreref);
+  // }
 
   // void onARKitViewCreated(ARKitController arkitController) {
   //   this.arkitController = arkitController;
@@ -122,8 +124,7 @@ class _HelloWorldState extends State<HelloWorld> {
       } else {
         var newNode = ARNode(
             type: NodeType.webGLB,
-            uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+            uri: "assets/singe.gltf",
             scale: vector.Vector3(0.2, 0.2, 0.2));
         bool? didAddWebNode = await this.arObjectManager?.addNode(newNode);
         webObjectNode = (didAddWebNode!) ? newNode : null;
