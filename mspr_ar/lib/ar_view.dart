@@ -22,7 +22,7 @@ class HelloWorld extends StatefulWidget {
 class _HelloWorldState extends State<HelloWorld> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
-  // ArCoreController? arCoreController;
+  ArCoreController? arCoreController;
   String? localObjectReference;
   ARNode? localObjectNode;
   String? webObjectReference;
@@ -35,7 +35,7 @@ class _HelloWorldState extends State<HelloWorld> {
   @override
   void dispose() {
     super.dispose();
-    // arSessionManager?.dispose();
+    arSessionManager?.dispose();
   }
 
   @override
@@ -44,28 +44,34 @@ class _HelloWorldState extends State<HelloWorld> {
         home: Scaffold(
             body: Container(
                 child: Stack(children: [
-      // ArCoreView(
-      //   onArCoreViewCreated: _onArCoreViewCreated,
-      // ),
+      ArCoreView(
+        onArCoreViewCreated: _onArCoreViewCreated,
+      ),
       // ARKitSceneView(
       //   onARKitViewCreated: onARKitViewCreated,
       // ),
-      ARView(onARViewCreated: onARViewCreated)
+      // ARView(onARViewCreated: onARViewCreated)
     ]))));
   }
 
-  // void _onArCoreViewCreated(ArCoreController controller) {
-  //   arCoreController = controller;
-  //   var coreref = ArCoreReferenceNode(
-  //     name: 'cube',
-  //     object3DFileName: "cube.sfb",
-  //     // objectUrl:
-  //     //     "https://https://github.com/999Rub/MSPR_AR/blob/main/mspr_ar/assets/singe.gltf",
-  //   );
-  //   coreref.shape?.materials.value = [ArCoreMaterial(color: Colors.red)];
-  //   //coreref.shape!.materials = ArCoreMaterial();
-  //   controller.addArCoreNodeWithAnchor(coreref);
-  // }
+  void _onArCoreViewCreated(ArCoreController controller) {
+    arCoreController = controller;
+    var coreref = ArCoreReferenceNode(
+      name: 'cube',
+      object3DFileName: "cube.sfb",
+      // objectUrl:
+      //     "https://https://github.com/999Rub/MSPR_AR/blob/main/mspr_ar/assets/singe.gltf",
+    );
+    final material = ArCoreMaterial(color: Colors.blue);
+
+    //coreref.shape?.materials.value = [ArCoreMaterial(color: Colors.red)];
+
+    final cube =
+        ArCoreCube(size: vector.Vector3(0.5, 0.5, 0.5), materials: [material]);
+    final node = ArCoreNode(shape: cube);
+    //coreref.shape!.materials = ArCoreMaterial();
+    controller.addArCoreNode(node);
+  }
 
   // void onARKitViewCreated(ARKitController arkitController) {
   //   this.arkitController = arkitController;
