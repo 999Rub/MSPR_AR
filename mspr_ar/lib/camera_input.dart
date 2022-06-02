@@ -121,7 +121,7 @@ class _CameraInputState extends State<CameraInput> {
                     print(text);
                     print(confidence);
 
-                    if (text == "singe") {
+                    if (text != "vide") {
                       // Navigator.push(
                       //     context,
                       //     MaterialPageRoute(
@@ -133,7 +133,8 @@ class _CameraInputState extends State<CameraInput> {
                           context,
                           MaterialPageRoute(
                               builder: ((context) => ArScreen(
-                                    colors: imageprocessor.last,
+                                    dessin: text,
+                                    newbytes: imageprocessor[2],
                                   ))));
                       break;
                     }

@@ -10,13 +10,17 @@ import 'package:image/image.dart' as imglib;
 import 'package:color/color.dart' as color;
 
 class ImageDetector {
-  final XFile image;
+  final XFile? image;
   final InputImage? inputImage;
-  final String path;
-  ImageDetector({required this.image, this.inputImage, required this.path});
+  final String? path;
+  ImageDetector({
+    this.image,
+    this.inputImage,
+    this.path,
+  });
 
   Future<List> image_pyramids() async {
-    var bytes = await image.readAsBytes();
+    var bytes = await image!.readAsBytes();
     imglib.Image src = imglib.decodeImage(bytes)!;
     int offsetX = ((src.width / 3)).round();
     int offsetY = ((src.height / 3)).round();
@@ -32,20 +36,19 @@ class ImageDetector {
 
     Image cropedimge = Image.memory(newbytes);
 
-    File file = await File(path).writeAsBytes(newbytes);
+    File file = await File(path!).writeAsBytes(newbytes);
     InputImage cropedInput = InputImage.fromFile(file);
-    List<Color> extractedColors = extractPixelsColors(newbytes);
+    // List<Color> extractedColors = extractPixelsColors(newbytes);
     List cropedDatas = [
       cropedimge,
       cropedInput,
-      extractedColors,
-      mapping_colors
+      newbytes,
     ];
-    print(extractedColors);
+    //  print(extractedColors);
     return cropedDatas;
   }
 
-  List<Color> extractPixelsColors(Uint8List? bytes) {
+  Map<String, List> extractPixelsColors(Uint8List? bytes, [String? dessin]) {
     List<Color> colors = [];
     int noOfPixelsPerAxis = 24;
 
@@ -65,20 +68,27 @@ class ImageDetector {
         int? pixel = image?.getPixel(xChunk * i, yChunk * j);
         // print("xChunk : ${xChunk * i} et yChunk : ${yChunk * j}");
         pixels.add(pixel);
-        colors.add(abgrToColor(pixel!, xChunk * i, yChunk * j, width, height));
+        colors.add(
+            abgrToColor(pixel!, xChunk * i, yChunk * j, width, height, dessin));
       }
     }
     //print(final_colors_name);
     clearFinalColors();
     print(mapping_colors);
-    return colors;
+    return mapping_colors;
   }
 
   List final_colors_name = [];
-  Map<String, List> mapping_colors = {'head': [], 'body': [], 'feets': []};
+  Map<String, List> mapping_colors = {
+    'zone1': [],
+    'zone2': [],
+    'zone3': [],
+    'zone4': [],
+    "zone5": []
+  };
 
-  Color abgrToColor(
-      int argbColor, int xChunk, int yChunk, int width, int heigh) {
+  Color abgrToColor(int argbColor, int xChunk, int yChunk, int width, int heigh,
+      [String? dessin]) {
     int r = (argbColor >> 16) & 0xFF;
     int b = argbColor & 0xFF;
     int hex = (argbColor & 0xFF00FF00) | (b << 16) | r;
@@ -86,20 +96,25 @@ class ImageDetector {
 
     List rgb = [color_from_hex.red, color_from_hex.green, color_from_hex.blue];
 
-    if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-      if (heigh * 0.15 < yChunk && heigh * 0.5 > yChunk) {
-        mapping_colors['head']?.addAll(getColorName(rgb));
-      }
-    }
-    if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-      if (heigh * 0.5 < yChunk && heigh * 0.8 > yChunk) {
-        mapping_colors['body']?.addAll(getColorName(rgb));
-      }
-    }
-    if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-      if (heigh * 0.9 <= yChunk && heigh >= yChunk) {
-        mapping_colors['feets']?.addAll(getColorName(rgb));
-      }
+    switch (dessin) {
+      case "singe":
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.15 < yChunk && heigh * 0.5 > yChunk) {
+            mapping_colors['zone1']?.addAll(getColorName(rgb));
+          }
+        }
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.5 < yChunk && heigh * 0.8 > yChunk) {
+            mapping_colors['zone2']?.addAll(getColorName(rgb));
+          }
+        }
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.9 <= yChunk && heigh >= yChunk) {
+            mapping_colors['zone3']?.addAll(getColorName(rgb));
+          }
+        }
+        break;
+      default:
     }
 
     return Color(hex);
