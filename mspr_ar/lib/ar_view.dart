@@ -13,12 +13,14 @@ import 'package:flutter/material.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 
-class HelloWorld extends StatefulWidget {
+class ArScreen extends StatefulWidget {
+  Map<String, List> colors;
+  ArScreen({required this.colors});
   @override
-  _HelloWorldState createState() => _HelloWorldState();
+  _ArScreenState createState() => _ArScreenState();
 }
 
-class _HelloWorldState extends State<HelloWorld> {
+class _ArScreenState extends State<ArScreen> {
   ARSessionManager? arSessionManager;
   ARObjectManager? arObjectManager;
   ArCoreController? arCoreController;
@@ -43,13 +45,15 @@ class _HelloWorldState extends State<HelloWorld> {
         home: Scaffold(
             body: Container(
                 child: Stack(children: [
-      ArCoreView(
-        onArCoreViewCreated: _onArCoreViewCreated,
-      ),
+      // ArCoreView(
+      //   onArCoreViewCreated: _onArCoreViewCreated,
+      // ),
       // ARKitSceneView(
       //   onARKitViewCreated: onARKitViewCreated,
       // ),
-      //  ARView(onARViewCreated: onARViewCreated)
+      ARView(
+        onARViewCreated: onARViewCreated,
+      )
     ]))));
   }
 
@@ -92,9 +96,10 @@ class _HelloWorldState extends State<HelloWorld> {
 
     this.arSessionManager?.onInitialize(
           showFeaturePoints: false,
-          showPlanes: false,
+          showPlanes: true,
+          showAnimatedGuide: false,
           //  customPlaneTexturePath: "Images/triangle.png",
-          showWorldOrigin: false,
+          showWorldOrigin: true,
           handleTaps: false,
         );
     this.arObjectManager?.onInitialize();
@@ -104,29 +109,41 @@ class _HelloWorldState extends State<HelloWorld> {
         this.arObjectManager?.removeNode(localObjectNode!);
         localObjectNode = null;
       } else {
-        var newNode = ARNode(
-            type: NodeType.localGLTF2,
-            uri: "assets/singe.gltf",
-            scale: vector.Vector3(0.2, 0.2, 0.2),
-            position: vector.Vector3(0.0, 0.0, 0.0),
-            rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
-        bool? didAddLocalNode = await this.arObjectManager?.addNode(newNode);
-        localObjectNode = (didAddLocalNode!) ? newNode : null;
-      }
-    }
+        var head = ARNode(
+          type: NodeType.localGLTF2,
+          uri:
+              "assets/head-singe-${widget.colors['head']?.first.toString()}.gltf",
+          scale: vector.Vector3(0.1, 0.1, 0.1),
+          position: vector.Vector3(0, -0.1, -0.1),
+          rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+        );
 
-    Future<void> onWebObjectAtOriginButtonPressed() async {
-      if (webObjectNode != null) {
-        this.arObjectManager?.removeNode(webObjectNode!);
-        webObjectNode = null;
-      } else {
-        var newNode = ARNode(
-            type: NodeType.webGLB,
-            uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
-            scale: vector.Vector3(0.2, 0.2, 0.2));
-        bool? didAddWebNode = await this.arObjectManager?.addNode(newNode);
-        webObjectNode = (didAddWebNode!) ? newNode : null;
+        var body = ARNode(
+            type: NodeType.localGLTF2,
+            uri: "assets/body-singe-${widget.colors['body']?.first}.gltf",
+            scale: vector.Vector3(0.1, 0.1, 0.1),
+            position: vector.Vector3(0, -0.2, -0.1),
+            rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+
+        // var lefthand = ARNode(
+        //     type: NodeType.localGLTF2,
+        //     uri: "assets/mainGaucheSingeVert.gltf",
+        //     scale: vector.Vector3(0.05, 0.05, 0.05),
+        //     position: vector.Vector3(-0.08, -0.12, -0.06),
+        //     rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+
+        // var righthand = ARNode(
+        //     type: NodeType.localGLTF2,
+        //     uri: "assets/mainDroiteSingeVert.gltf",
+        //     scale: vector.Vector3(0.05, 0.05, 0.05),
+        //     position: vector.Vector3(0.08, -0.1, -0.07),
+        //     rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+
+        bool? didAddLocalNode = await this.arObjectManager?.addNode(head);
+        await this.arObjectManager?.addNode(body);
+        //await this.arObjectManager?.addNode(lefthand);
+        //await this.arObjectManager?.addNode(righthand);
+        localObjectNode = (didAddLocalNode!) ? head : null;
       }
     }
 

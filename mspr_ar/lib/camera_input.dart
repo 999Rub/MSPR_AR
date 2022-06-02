@@ -132,7 +132,9 @@ class _CameraInputState extends State<CameraInput> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: ((context) => HelloWorld())));
+                              builder: ((context) => ArScreen(
+                                    colors: imageprocessor.last,
+                                  ))));
                       break;
                     }
                   }
