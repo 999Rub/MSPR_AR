@@ -99,20 +99,53 @@ class ImageDetector {
     switch (dessin) {
       case "singe":
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (heigh * 0.15 < yChunk && heigh * 0.5 > yChunk) {
+          if (0 < yChunk && heigh * 0.5 > yChunk) {
+            mapping_colors['zone1']?.addAll(getColorName(rgb));
+          }
+        }
+        if (width * 0.4 < xChunk && xChunk < width * 0.6) {
+          if (heigh * 0.15 < yChunk && heigh * 0.4 > yChunk) {
+            mapping_colors['zone2']?.addAll(getColorName(rgb));
+          }
+        }
+
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.5 < yChunk && heigh * 0.8 > yChunk) {
+            mapping_colors['zone4']?.addAll(getColorName(rgb));
+          }
+        }
+        // if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+        //   if (heigh * 0.9 <= yChunk && heigh >= yChunk) {
+        //     mapping_colors['zone5']?.addAll(getColorName(rgb));
+        //   }
+        // }
+        break;
+      case 'rhino':
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (0 < yChunk && heigh * 0.4 > yChunk) {
             mapping_colors['zone1']?.addAll(getColorName(rgb));
           }
         }
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (heigh * 0.5 < yChunk && heigh * 0.8 > yChunk) {
+          if (heigh * 0.20 < yChunk && heigh * 0.4 > yChunk) {
             mapping_colors['zone2']?.addAll(getColorName(rgb));
           }
         }
-        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (heigh * 0.9 <= yChunk && heigh >= yChunk) {
+        if (width * 0.5 < xChunk && xChunk < width * 0.6) {
+          if (heigh * 0.4 < yChunk && heigh * 0.5 > yChunk) {
             mapping_colors['zone3']?.addAll(getColorName(rgb));
           }
         }
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.7 < yChunk && heigh > yChunk) {
+            mapping_colors['zone4']?.addAll(getColorName(rgb));
+          }
+        }
+        // if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+        //   if (heigh * 0.9 <= yChunk && heigh >= yChunk) {
+        //     mapping_colors['zone5']?.addAll(getColorName(rgb));
+        //   }
+        // }
         break;
       default:
     }
@@ -130,6 +163,7 @@ class ImageDetector {
       'purple',
       'pink',
       'brown',
+      'white',
       'orange'
     ];
     var diff_temp = null;

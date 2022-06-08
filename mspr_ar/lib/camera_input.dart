@@ -105,7 +105,7 @@ class _CameraInputState extends State<CameraInput> {
                   final imageLabeler = GoogleMlKit.vision.imageLabeler(
                       CustomImageLabelerOptions(
                           customModel: localModel,
-                          customModelPath: "model-moldav.tflite"));
+                          customModelPath: "model.tflite"));
                   List imageprocessor = await ImageDetector(
                           path: image.path,
                           inputImage: inputImage,
@@ -127,7 +127,6 @@ class _CameraInputState extends State<CameraInput> {
                       //     MaterialPageRoute(
                       //         builder: ((context) => ImageResizedView(
                       //               image: imageprocessor[0],
-                      //               colors: imageprocessor[2],
                       //             ))));
                       Navigator.push(
                           context,

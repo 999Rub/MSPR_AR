@@ -55,14 +55,16 @@ class _ArScreenState extends State<ArScreen> {
         home: Scaffold(
             body: Container(
                 child: Stack(children: [
-      // ArCoreView(
-      //   onArCoreViewCreated: _onArCoreViewCreated,
-      // ),
       // ARKitSceneView(
       //   onARKitViewCreated: onARKitViewCreated,
       // ),
+
       ARView(
         onARViewCreated: onARViewCreated,
+      ),
+      Align(
+        alignment: FractionalOffset.bottomCenter,
+        child: ElevatedButton(onPressed: () {}, child: Text("SHARE")),
       )
     ]))));
   }
@@ -83,6 +85,17 @@ class _ArScreenState extends State<ArScreen> {
   //   );
   //   controller.add(node!);
   // }
+  Future<void> onTakeScreenshot() async {
+    var image = await this.arSessionManager!.snapshot();
+    await showDialog(
+        context: context,
+        builder: (_) => Dialog(
+              child: Container(
+                decoration: BoxDecoration(
+                    image: DecorationImage(image: image, fit: BoxFit.cover)),
+              ),
+            ));
+  }
 
   void onARViewCreated(
       ARSessionManager arSessionManager,
@@ -97,7 +110,7 @@ class _ArScreenState extends State<ArScreen> {
           showPlanes: true,
           showAnimatedGuide: false,
           //  customPlaneTexturePath: "Images/triangle.png",
-          showWorldOrigin: true,
+          showWorldOrigin: false,
           handleTaps: false,
         );
     this.arObjectManager?.onInitialize();
@@ -109,42 +122,113 @@ class _ArScreenState extends State<ArScreen> {
       } else {
         switch (widget.dessin) {
           case "singe":
-            var head = ARNode(
+            var zone1 = ARNode(
+              // tete oreilles
               type: NodeType.localGLTF2,
               uri:
-                  "assets/head-singe-${mapping_color['zone1']?.first.toString()}.gltf",
+                  "assets/zone1-${widget.dessin}-${mapping_color['zone1']!.isNotEmpty ? "white" : mapping_color['zone1']?.first.toString()}.gltf",
               scale: vector.Vector3(0.1, 0.1, 0.1),
               position: vector.Vector3(0, -0.1, -0.1),
               rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
             );
 
-            var body = ARNode(
+            var zone2 = ARNode(
+              // yeux et nez
+              type: NodeType.localGLTF2,
+              uri: mapping_color['zone2']!.isNotEmpty
+                  ? "assets/zone2-${widget.dessin}-${mapping_color['zone2']?.first.toString()}.gltf"
+                  : "assets/zone2-singe-white.gltf",
+              scale: vector.Vector3(0.05, 0.05, 0.05),
+              position: vector.Vector3(0, -0.08, -0.04),
+              rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+            );
+
+            var zone4 = ARNode(
+                // corps
                 type: NodeType.localGLTF2,
-                uri: "assets/body-singe-${mapping_color['zone2']?.first}.gltf",
+                uri: mapping_color['zone4']!.isNotEmpty
+                    ? "assets/zone4-singe-${mapping_color['zone4']?.first.toString()}.gltf"
+                    : "assets/zone4-singe-white.gltf",
                 scale: vector.Vector3(0.1, 0.1, 0.1),
                 position: vector.Vector3(0, -0.2, -0.1),
                 rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
 
-            // var lefthand = ARNode(
-            //     type: NodeType.localGLTF2,
-            //     uri: "assets/mainGaucheSingeVert.gltf",
-            //     scale: vector.Vector3(0.05, 0.05, 0.05),
-            //     position: vector.Vector3(-0.08, -0.12, -0.06),
-            //     rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+            var zone5 = ARNode(
+                // main et pieds
+                type: NodeType.localGLTF2,
+                uri: mapping_color['zone5']!.isNotEmpty
+                    ? "assets/zone5-singe-${mapping_color['zone5']?.first.toString()}.gltf"
+                    : "assets/zone5-singe-white.gltf",
+                scale: vector.Vector3(0.05, 0.05, 0.05),
+                position: vector.Vector3(0, -0.15, -0.04),
+                rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
 
-            // var righthand = ARNode(
-            //     type: NodeType.localGLTF2,
-            //     uri: "assets/mainDroiteSingeVert.gltf",
-            //     scale: vector.Vector3(0.05, 0.05, 0.05),
-            //     position: vector.Vector3(0.08, -0.1, -0.07),
-            //     rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+            bool? didAddLocalNode = await this.arObjectManager?.addNode(zone1);
+            await this.arObjectManager?.addNode(zone4);
+            await this.arObjectManager?.addNode(zone5);
+            await this.arObjectManager?.addNode(zone2);
 
-            bool? didAddLocalNode = await this.arObjectManager?.addNode(head);
-            await this.arObjectManager?.addNode(body);
-            //await this.arObjectManager?.addNode(lefthand);
-            //await this.arObjectManager?.addNode(righthand);
-            localObjectNode = (didAddLocalNode!) ? head : null;
+            //localObjectNode = (didAddLocalNode!) ? head : null;
             break;
+          case "rhino":
+            var zone1 = ARNode(
+              // tete oreilles
+              type: NodeType.localGLTF2,
+              uri:
+                  "assets/zone1-${widget.dessin}-${mapping_color['zone1']!.isNotEmpty ? "white" : mapping_color['zone1']?.first.toString()}.gltf",
+              scale: vector.Vector3(0.1, 0.1, 0.1),
+              position: vector.Vector3(0, -0.1, -0.1),
+              rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+            );
+
+            var zone2 = ARNode(
+              // yeux et nez
+              type: NodeType.localGLTF2,
+              uri: mapping_color['zone2']!.isNotEmpty
+                  ? "assets/zone2-${widget.dessin}-${mapping_color['zone2']?.first.toString()}.gltf"
+                  : "assets/zone2-rhino-white.gltf",
+              scale: vector.Vector3(0.05, 0.05, 0.05),
+              position: vector.Vector3(0, -0.12, -0.75),
+              rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+            );
+
+            var zone3 = ARNode(
+              // yeux et nez
+              type: NodeType.localGLTF2,
+              uri: mapping_color['zone3']!.isNotEmpty
+                  ? "assets/zone3-${widget.dessin}-${mapping_color['zone3']?.first.toString()}.gltf"
+                  : "assets/zone3-rhino-white.gltf",
+              scale: vector.Vector3(0.05, 0.05, 0.05),
+              position: vector.Vector3(0, -0.08, -0.04),
+              rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
+            );
+
+            var zone4 = ARNode(
+                // corps
+                type: NodeType.localGLTF2,
+                uri: mapping_color['zone4']!.isNotEmpty
+                    ? "assets/zone4-rhino-${mapping_color['zone4']?.first.toString()}.gltf"
+                    : "assets/zone4-rhino-white.gltf",
+                scale: vector.Vector3(0.1, 0.1, 0.1),
+                position: vector.Vector3(0, -0.2, -0.1),
+                rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+
+            // var zone5 = ARNode(
+            //     // main et pieds
+            //     type: NodeType.localGLTF2,
+            //     uri: mapping_color['zone5']!.isNotEmpty
+            //         ? "assets/zone5-rhino-${mapping_color['zone5']?.first.toString()}.gltf"
+            //         : "assets/zone5-rhino-white.gltf",
+            //     scale: vector.Vector3(0.05, 0.05, 0.05),
+            //     position: vector.Vector3(0, -0.15, -0.04),
+            //     rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0));
+
+            bool? didAddLocalNode = await this.arObjectManager?.addNode(zone1);
+            await this.arObjectManager?.addNode(zone4);
+            await this.arObjectManager?.addNode(zone3);
+            await this.arObjectManager?.addNode(zone2);
+            break;
+
           default:
         }
       }
