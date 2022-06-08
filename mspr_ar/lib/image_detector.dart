@@ -122,7 +122,7 @@ class ImageDetector {
         break;
       case 'rhino':
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (0 < yChunk && heigh * 0.4 > yChunk) {
+          if (0 < yChunk && heigh * 0.3 > yChunk) {
             mapping_colors['zone1']?.addAll(getColorName(rgb));
           }
         }

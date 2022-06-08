@@ -10,10 +10,15 @@ import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
 import 'package:ar_flutter_plugin/models/ar_node.dart';
 import 'package:arcore_flutter_plugin/arcore_flutter_plugin.dart';
 import 'package:arkit_plugin/arkit_plugin.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:msprmlkit/image_detector.dart';
+import 'package:msprmlkit/share_view.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:vector_math/vector_math_64.dart' as vector;
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
+import 'package:native_screenshot/native_screenshot.dart';
 
 class ArScreen extends StatefulWidget {
   String dessin;
@@ -36,37 +41,83 @@ class _ArScreenState extends State<ArScreen> {
   late ARKitController arkitController;
   ARKitReferenceNode? node;
   late Map<String, List> mapping_color;
+  int _counter = 0;
+  Uint8List? _imageFile;
   @override
   void dispose() {
     super.dispose();
     arSessionManager?.dispose();
   }
 
+  ScreenshotController screenshotController = ScreenshotController();
+
   @override
   void initState() {
     super.initState();
+
     mapping_color =
         ImageDetector().extractPixelsColors(widget.newbytes, widget.dessin);
+    for (var color in mapping_color.entries) {
+      if (color.value.isEmpty || color.value == []) {
+        mapping_color[color.key]!.add("white");
+      }
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: Scaffold(
-            body: Container(
-                child: Stack(children: [
-      // ARKitSceneView(
-      //   onARKitViewCreated: onARKitViewCreated,
-      // ),
+    return Screenshot(
+      controller: screenshotController,
+      child: Scaffold(
+          body: Container(
+              child: Stack(children: [
+        // ARKitSceneView(
+        //   onARKitViewCreated: onARKitViewCreated,
+        // ),
 
-      ARView(
-        onARViewCreated: onARViewCreated,
-      ),
-      Align(
-        alignment: FractionalOffset.bottomCenter,
-        child: ElevatedButton(onPressed: () {}, child: Text("SHARE")),
-      )
-    ]))));
+        ARView(
+          onARViewCreated: onARViewCreated,
+        ),
+        Align(
+          alignment: FractionalOffset.bottomCenter,
+          child: ElevatedButton(
+              onPressed: () async {
+                String? path = await NativeScreenshot.takeScreenshot()
+                    .then((String? path) {
+                  File screenshot = File(path!);
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: ((context) => ShareView(
+                                screenshot: screenshot,
+                              ))));
+                });
+                // await screenshotController
+                //     .capture(delay: const Duration(milliseconds: 10))
+                //     .then((Uint8List? image) async {
+                //   if (image != null) {
+                //     final directory =
+                //         await getApplicationDocumentsDirectory();
+                //     final imagePath =
+                //         await File('${directory.path}/image.png').create();
+                //     await imagePath.writeAsBytes(image);
+                //     Navigator.push(
+                //         context,
+                //         MaterialPageRoute(
+                //             builder: ((context) => ShareView(
+                //                   screenshot: imagePath,
+                //                 ))));
+                //   }
+                // });
+
+                const CupertinoActionSheet(
+                  title: Text("Share on social media"),
+                );
+              },
+              child: Text("SHARE")),
+        )
+      ]))),
+    );
   }
 
   // void onARKitViewCreated(ARKitController arkitController) {
@@ -110,8 +161,8 @@ class _ArScreenState extends State<ArScreen> {
           showPlanes: true,
           showAnimatedGuide: false,
           //  customPlaneTexturePath: "Images/triangle.png",
-          showWorldOrigin: false,
-          handleTaps: false,
+          showWorldOrigin: true,
+          handleTaps: true,
         );
     this.arObjectManager?.onInitialize();
 
@@ -139,7 +190,7 @@ class _ArScreenState extends State<ArScreen> {
                   ? "assets/zone2-${widget.dessin}-${mapping_color['zone2']?.first.toString()}.gltf"
                   : "assets/zone2-singe-white.gltf",
               scale: vector.Vector3(0.05, 0.05, 0.05),
-              position: vector.Vector3(0, -0.08, -0.04),
+              position: vector.Vector3(0, -0.08, -0.1),
               rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
             );
 
@@ -184,11 +235,10 @@ class _ArScreenState extends State<ArScreen> {
             var zone2 = ARNode(
               // yeux et nez
               type: NodeType.localGLTF2,
-              uri: mapping_color['zone2']!.isNotEmpty
-                  ? "assets/zone2-${widget.dessin}-${mapping_color['zone2']?.first.toString()}.gltf"
-                  : "assets/zone2-rhino-white.gltf",
+              uri:
+                  "assets/zone2-${widget.dessin}-${mapping_color['zone2']!.isNotEmpty ? "white" : mapping_color['zone2']?.first.toString()}.gltf",
               scale: vector.Vector3(0.05, 0.05, 0.05),
-              position: vector.Vector3(0, -0.12, -0.75),
+              position: vector.Vector3(0, -0.125, -0.05),
               rotation: vector.Vector4(1.0, 0.0, 0.0, 0.0),
             );
 

@@ -30,6 +30,7 @@ class _CameraInputState extends State<CameraInput> {
       if (!mounted) {
         return;
       }
+
       setState(() {});
     });
   }
