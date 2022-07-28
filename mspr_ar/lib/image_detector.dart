@@ -122,12 +122,12 @@ class ImageDetector {
         break;
       case 'rhino':
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (0 < yChunk && heigh * 0.3 > yChunk) {
+          if (0 < yChunk && heigh * 0.1 > yChunk) {
             mapping_colors['zone1']?.addAll(getColorName(rgb));
           }
         }
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (heigh * 0.20 < yChunk && heigh * 0.4 > yChunk) {
+          if (heigh * 0.4 < yChunk && heigh * 0.7 > yChunk) {
             mapping_colors['zone2']?.addAll(getColorName(rgb));
           }
         }
@@ -137,7 +137,7 @@ class ImageDetector {
           }
         }
         if (width * 0.2 < xChunk && xChunk < width * 0.8) {
-          if (heigh * 0.7 < yChunk && heigh > yChunk) {
+          if (heigh * 0.8 < yChunk && heigh > yChunk) {
             mapping_colors['zone4']?.addAll(getColorName(rgb));
           }
         }
@@ -146,6 +146,24 @@ class ImageDetector {
         //     mapping_colors['zone5']?.addAll(getColorName(rgb));
         //   }
         // }
+        break;
+      case 'serpent':
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (0 < yChunk && heigh * 0.2 > yChunk) {
+            mapping_colors['zone1']?.addAll(getColorName(rgb));
+          }
+        }
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.2 < yChunk && heigh * 0.3 > yChunk) {
+            mapping_colors['zone2']?.addAll(getColorName(rgb));
+          }
+        }
+        if (width * 0.2 < xChunk && xChunk < width * 0.8) {
+          if (heigh * 0.4 < yChunk && heigh > yChunk) {
+            mapping_colors['zone3']?.addAll(getColorName(rgb));
+          }
+        }
+
         break;
       default:
     }
@@ -203,7 +221,7 @@ class ImageDetector {
         }
       }
       final Map counts = {};
-      String most_occurate_color = '';
+      String most_occurate_color = 'white';
       int counter = 0;
       //  counts.containsKey(e) ? counts[e]++ : counts[e] = 1
       colors.value.forEach((element) => counts.containsKey(element)

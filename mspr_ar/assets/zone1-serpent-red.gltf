@@ -1,0 +1,105 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "imagetostl_mesh"
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "mat0",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.8627450466156006,
+                    0,
+                    0.0007290285429917276,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.4000000059604645
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "imagetostl_mesh",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1
+                    },
+                    "indices" : 2,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 178275,
+            "max" : [
+                -24.41778564453125,
+                47.6053352355957,
+                64.76271057128906
+            ],
+            "min" : [
+                -39.19822692871094,
+                43.03115463256836,
+                50.69194030761719
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 178275,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5125,
+            "count" : 178275,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 2139300,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 2139300,
+            "byteOffset" : 2139300
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 713100,
+            "byteOffset" : 4278600
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 4991700,
+            "uri" : "zone1-serpent-red.bin"
+        }
+    ]
+}
