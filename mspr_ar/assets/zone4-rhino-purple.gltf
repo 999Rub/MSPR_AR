@@ -1,0 +1,121 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Coprs-Pates",
+            "rotation" : [
+                0.6382489800453186,
+                -0.6099366545677185,
+                0.31330475211143494,
+                -0.3499366343021393
+            ],
+            "scale" : [
+                0.13766156136989594,
+                0.13766156136989594,
+                0.13766156136989594
+            ],
+            "translation" : [
+                -1.0422744750976562,
+                -2.260709762573242,
+                -0.25022971630096436
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "Material.006",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.6219671964645386,
+                    0,
+                    0.8000000715255737,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Roundcube.015",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1
+                    },
+                    "indices" : 2,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 36341,
+            "max" : [
+                2.1525793075561523,
+                16.582746505737305,
+                17.16405487060547
+            ],
+            "min" : [
+                -15.991861343383789,
+                -6.982907772064209,
+                -2.718897819519043
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 36341,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5123,
+            "count" : 216864,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 436092,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 436092,
+            "byteOffset" : 436092
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 433728,
+            "byteOffset" : 872184
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 1305912,
+            "uri" : "zone4-rhino-purple.bin"
+        }
+    ]
+}

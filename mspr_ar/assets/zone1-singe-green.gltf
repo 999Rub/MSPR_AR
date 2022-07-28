@@ -1,0 +1,121 @@
+{
+    "asset" : {
+        "generator" : "Khronos glTF Blender I/O v1.6.16",
+        "version" : "2.0"
+    },
+    "scene" : 0,
+    "scenes" : [
+        {
+            "name" : "Scene",
+            "nodes" : [
+                0
+            ]
+        }
+    ],
+    "nodes" : [
+        {
+            "mesh" : 0,
+            "name" : "Tete",
+            "rotation" : [
+                -0.021031225100159645,
+                0.9997788071632385,
+                0,
+                -2.8246114425201085e-07
+            ],
+            "scale" : [
+                1.456941843032837,
+                1.5021857023239136,
+                1.4557589292526245
+            ],
+            "translation" : [
+                -0.14181077480316162,
+                0.4956248998641968,
+                0
+            ]
+        }
+    ],
+    "materials" : [
+        {
+            "doubleSided" : true,
+            "name" : "Material",
+            "pbrMetallicRoughness" : {
+                "baseColorFactor" : [
+                    0.018826358020305634,
+                    0.8000000715255737,
+                    0,
+                    1
+                ],
+                "metallicFactor" : 0,
+                "roughnessFactor" : 0.5
+            }
+        }
+    ],
+    "meshes" : [
+        {
+            "name" : "Roundcube.018",
+            "primitives" : [
+                {
+                    "attributes" : {
+                        "POSITION" : 0,
+                        "NORMAL" : 1
+                    },
+                    "indices" : 2,
+                    "material" : 0
+                }
+            ]
+        }
+    ],
+    "accessors" : [
+        {
+            "bufferView" : 0,
+            "componentType" : 5126,
+            "count" : 10760,
+            "max" : [
+                1.1736677885055542,
+                0.8209716081619263,
+                0.8277075886726379
+            ],
+            "min" : [
+                -1.1736677885055542,
+                -0.7255271673202515,
+                -0.9103772640228271
+            ],
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 1,
+            "componentType" : 5126,
+            "count" : 10760,
+            "type" : "VEC3"
+        },
+        {
+            "bufferView" : 2,
+            "componentType" : 5123,
+            "count" : 63810,
+            "type" : "SCALAR"
+        }
+    ],
+    "bufferViews" : [
+        {
+            "buffer" : 0,
+            "byteLength" : 129120,
+            "byteOffset" : 0
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 129120,
+            "byteOffset" : 129120
+        },
+        {
+            "buffer" : 0,
+            "byteLength" : 127620,
+            "byteOffset" : 258240
+        }
+    ],
+    "buffers" : [
+        {
+            "byteLength" : 385860,
+            "uri" : "zone1-singe-green.bin"
+        }
+    ]
+}

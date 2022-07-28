@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 
 class ImageResizedView extends StatelessWidget {
   final Image image;
-  final List<Color> colors;
-  const ImageResizedView({Key? key, required this.image, required this.colors})
-      : super(key: key);
+  const ImageResizedView({
+    Key? key,
+    required this.image,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -16,19 +17,6 @@ class ImageResizedView extends StatelessWidget {
             width: 400,
             height: 300,
           ),
-          GridView.builder(
-              shrinkWrap: true,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: noOfPixelsPerAxis),
-              itemCount: colors.length,
-              itemBuilder: (BuildContext ctx, index) {
-                return Container(
-                  alignment: Alignment.center,
-                  child: Container(
-                    color: colors[index],
-                  ),
-                );
-              })
         ],
       ),
     );
